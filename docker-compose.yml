@@ -1,10 +1,11 @@
+version: "3.9"
+
 services:
   backend:
     build:
       context: ./backend
     ports:
       - "4443:4443"
-      
     # Uncomment the following volume mount if you want to live-edit the
     # server code without rebuilding the image. Docker will then mount the
     # backend source into the container at runtime.
