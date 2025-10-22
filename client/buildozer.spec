@@ -32,7 +32,8 @@ version = 0.1
 # third‑party HTTP libraries. The `legacy‑cgi` requirement is only
 # necessary if you build with Python ≥3.13; you can add
 # "legacy‑cgi; python_version >= '3.13'" here to avoid import errors.
-requirements = python3,kivy,requests,urllib3
+requirements = python3,kivy,kivy-garden,requests
+garden_requirements = mapview
 
 # (str) Supported orientation (one of landscape, portrait, all)
 orientation = portrait
