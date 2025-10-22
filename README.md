@@ -12,8 +12,8 @@ docker compose up --build
 ```sh
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
 cd client
+pip install -r requirements.txt
 ```
 
 ### Запуск проекта
