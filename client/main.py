@@ -27,6 +27,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 API_URL = "https://localhost:4443/ping"  # адрес backend‑сервиса
 
+
 class MainWidget(BoxLayout):
     def __init__(self, **kwargs):
         super().__init__(orientation="vertical", **kwargs)
@@ -53,9 +54,11 @@ class MainWidget(BoxLayout):
         )
         popup.open()
 
+
 class PingApp(App):
     def build(self):
         return MainWidget()
+
 
 if __name__ == "__main__":
     PingApp().run()

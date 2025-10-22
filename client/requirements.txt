@@ -1,3 +1,5 @@
 kivy[base]
 legacy-cgi; python_version >= "3.13"
 requests
+buildozer
+cython==0.29.33
