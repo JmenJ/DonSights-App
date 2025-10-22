@@ -10,13 +10,13 @@
 
 [app]
 # (str) Title of your application
-title = DonetskKivyApp
+title = DonSights
 
 # (str) Package name
-package.name = donetskapp
+package.name = donsights
 
 # (str) Package domain (unique, can be reversed domain-style)
-package.domain = org.example
+package.domain = com.donsights
 
 # (str) Source code directory (relative to this spec file)
 source.dir = .
@@ -55,7 +55,7 @@ android.permissions = INTERNET
 
 [buildozer]
 # (int) Buildozer log level (0 = error only, 2 = debug)
-log_level = 1
+log_level = 2
 
 # (bool) Copy the Android APK to the current directory after build
 copy_to_current_dir = 1
