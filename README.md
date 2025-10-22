@@ -10,10 +10,10 @@ docker compose up --build
 ### Настройка виртуального окружения и установка зависимостей (Производится один раз)
 
 ```sh
-cd client
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+cd client
 ```
 
 ### Запуск проекта
