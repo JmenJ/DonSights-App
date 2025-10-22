@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "4443:4443"
+      
+    # Uncomment the following volume mount if you want to live-edit the
+    # server code without rebuilding the image. Docker will then mount the
+    # backend source into the container at runtime.
+    # volumes:
+    #   - ./backend:/app
+
+  # The client service is optional.  It uses the official Flutter Docker image
+  # to build and serve the Flutter web version of the app.  To run a Flutter
+  # Android build locally you should use your own toolchain on the host.
+  # See client/Dockerfile for details.
+  #
+  #frontend:
+  #  build:
+  #    context: ./client
+  #  ports:
+  #    - "8080:8080"
+  #  depends_on:
+  #    - backend
