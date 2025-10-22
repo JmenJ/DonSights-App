@@ -1,159 +1,112 @@
-"""
-Простой клиент на Kivy для взаимодействия с сервером, который
-прослушивает эндпоинт https://localhost:4443/ping.  По нажатию на кнопку
-отправляется HTTPS‑запрос и результат отображается в всплывающем окне.
-
-Kivy — это кроссплатформенный фреймворк для создания GUI
-приложений на Python.  Для работы этого примера понадобится
-установить зависимости из requirements.txt.
-
-Сервер, к которому обращается клиент, работает на самоподписанном
-сертификате.  Поэтому параметр `verify=False` отключает проверку
-сертификата.  В продакшене следует использовать корректный сертификат
-и убрать этот параметр.
-"""
-
-"""
-Обновлённый клиент на Kivy для отправки запроса на сервер.
-
-В этой версии интерфейс был переработан: добавлены поля для ввода IP‑адреса и порта,
-кнопка отправки запроса и базовое оформление в духе современных приложений.
-Пользователь может указать адрес сервера и порт, после чего получить ответ
-от эндпоинта `/ping`.  Результат запроса отображается во всплывающем окне.
-
-Для корректной работы требуется установить зависимости из `requirements.txt`.
-Если сервер использует самоподписанный сертификат, проверка SSL отключается
-через `verify=False`.  В боевом окружении используйте реальный сертификат.
-"""
-
-import json
-from typing import Optional
-
-import requests
-import urllib3
-
 from kivy.app import App
-from kivy.core.window import Window
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.garden.mapview import MapView
+from kivy.clock import Clock
+from kivy.core.window import Window
+from kivy.metrics import dp, sp
+import urllib3
+import requests
+import json
 
-# Отключаем предупреждения об использовании самоподписанного сертификата.
+# Отключим предупреждения от urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-class MainWidget(BoxLayout):
-    """Главный виджет приложения.
+# Получим DPI и определим масштаб интерфейса
+dpi_scale = max(Window.dpi / 160.0, 1.0)
 
-    Содержит два поля ввода (IP‑адрес и порт) и кнопку для отправки запроса.
-    Отображает результат в модальном окне.
-    """
+class ConnectScreen(BoxLayout):
+    def __init__(self, switch_callback, **kwargs):
+        super().__init__(orientation='vertical', spacing=dp(16), padding=dp(20) * dpi_scale, **kwargs)
+        self.switch_callback = switch_callback
 
-    def __init__(self, **kwargs) -> None:
-        super().__init__(orientation="vertical", padding=24, spacing=16, **kwargs)
-
-        # Задаём нейтральный цвет фона и базовые размеры окна
-        Window.clearcolor = (0.95, 0.95, 0.95, 1)
-
-        # Поле для ввода IP‑адреса
-        self.ip_input: TextInput = TextInput(
-            hint_text="IP‑адрес сервера",
-            text="",  # оставляем пустым — пользователь введёт сам
-            multiline=False,
+        self.ip_input = TextInput(
+            hint_text='IP адрес',
+            text="localhost",
             size_hint=(1, None),
-            height=48,
-            padding=[12, 14, 12, 14],
-            foreground_color=(0.1, 0.1, 0.1, 1),
-            background_color=(1, 1, 1, 1),
-            cursor_color=(0.2, 0.6, 0.9, 1),
-            font_size=18,
+            height=dp(50) * dpi_scale,
+            font_size=sp(18) * dpi_scale,
+            multiline=False
         )
         self.add_widget(self.ip_input)
 
-        # Поле для ввода порта. По умолчанию 4443
-        self.port_input: TextInput = TextInput(
-            hint_text="Порт (по умолчанию 4443)",
+        self.port_input = TextInput(
+            hint_text='Порт',
             text="4443",
-            multiline=False,
             size_hint=(1, None),
-            height=48,
-            padding=[12, 14, 12, 14],
-            foreground_color=(0.1, 0.1, 0.1, 1),
-            background_color=(1, 1, 1, 1),
-            cursor_color=(0.2, 0.6, 0.9, 1),
-            font_size=18,
-            input_filter="int",
+            height=dp(50) * dpi_scale,
+            font_size=sp(18) * dpi_scale,
+            multiline=False
         )
         self.add_widget(self.port_input)
 
-        # Кнопка отправки запроса
-        self.send_button: Button = Button(
-            text="Отправить запрос",
+        self.status_label = Label(
+            text='',
             size_hint=(1, None),
-            height=56,
-            font_size=18,
-            color=(1, 1, 1, 1),
-            background_normal="",
-            background_color=(0.25, 0.47, 0.8, 1),  # синий цвет в духе Material
+            height=dp(40) * dpi_scale,
+            font_size=sp(16) * dpi_scale,
+            color=(1, 0, 0, 1)
         )
-        self.send_button.bind(on_press=self.on_press)
-        self.add_widget(self.send_button)
+        self.add_widget(self.status_label)
 
-    def build_url(self) -> Optional[str]:
-        """Формирует URL из значений полей.
+        self.connect_btn = Button(
+            text='Подключиться',
+            size_hint=(1, None),
+            height=dp(60) * dpi_scale,
+            font_size=sp(20) * dpi_scale,
+            background_normal='',
+            background_color=(0.2, 0.6, 0.86, 1),
+        )
+        self.connect_btn.bind(on_press=self.try_connect)
+        self.add_widget(self.connect_btn)
 
-        Returns:
-            str | None: Полный URL для запроса. Если IP не указан, возвращает None.
-        """
+    def try_connect(self, instance):
         ip = self.ip_input.text.strip()
-        port = self.port_input.text.strip() or "4443"
-        if not ip:
-            return None
-        return f"https://{ip}:{port}/ping"
-
-    def on_press(self, instance: Button) -> None:
-        """Обработчик нажатия на кнопку.
-
-        Формирует URL, отправляет GET‑запрос и отображает результат.
-        """
-        url = self.build_url()
-        if not url:
-            self.show_popup("Ошибка", "Пожалуйста, введите IP‑адрес сервера.")
+        port = self.port_input.text.strip()
+        if not ip or not port:
+            self.status_label.text = 'Введите IP и порт.'
             return
 
         try:
+            url = f"https://{ip}:{port}/ping"
             response = requests.get(url, verify=False, timeout=7)
             if response.ok:
                 data = response.json()
-                content = json.dumps(data, ensure_ascii=False, indent=2)
+                if any(str(v).lower() in ('ok', 'pong') for v in data.values()):
+                    self.status_label.text = ''
+                    self.switch_callback()  # Переход на карту
+                    return
+                self.status_label.text = json.dumps(data, ensure_ascii=False)
             else:
-                content = f"Код ответа: {response.status_code}"
+                self.status_label.text = f"Ошибка: статус {response.status_code}"
         except Exception as exc:
-            content = f"Ошибка: {exc}"
-        self.show_popup("Ответ сервера", content)
+            self.status_label.text = f"Ошибка подключения: {exc}"
 
-    def show_popup(self, title: str, content: str) -> None:
-        """Отображает модальное окно с заголовком и содержимым."""
-        popup = Popup(
-            title=title,
-            content=Label(
-                text=content,
-                color=(0, 0, 0, 1),
-                font_size=16,
-                text_size=(0.9 * Window.width, None),
-                halign="left",
-                valign="top",
-            ),
-            size_hint=(0.9, 0.5),
-        )
-        popup.open()
+class MapScreen(Screen):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.map_view = MapView(zoom=18, lat=47.991551, lon=37.798513)  # Донецк
+        self.add_widget(self.map_view)
 
-class PingApp(App):
-    """Класс приложения, инициализирующий основной виджет."""
+class MainApp(App):
+    def build(self):
+        self.sm = ScreenManager()
 
-    def build(self) -> MainWidget:
-        return MainWidget()
+        self.connect_screen = Screen(name='connect')
+        self.connect_screen.add_widget(ConnectScreen(switch_callback=self.show_map))
 
-if __name__ == "__main__":
-    PingApp().run()
+        self.map_screen = MapScreen(name='map')
+
+        self.sm.add_widget(self.connect_screen)
+        self.sm.add_widget(self.map_screen)
+
+        return self.sm
+
+    def show_map(self):
+        self.sm.current = 'map'
+
+if __name__ == '__main__':
+    MainApp().run()

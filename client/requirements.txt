@@ -1,4 +1,5 @@
 kivy[base]
+kivy-garden
 legacy-cgi; python_version >= "3.13"
 requests
 buildozer
