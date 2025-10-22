@@ -43,7 +43,7 @@ fullscreen = 1
 # (str) Android API level to use (comment to use the default API
 # available with python‑for‑android). You can adjust this to match
 # your installed SDK version.
-# android.api = 33
+android.api = 33
 
 [android]
 # (list) Permissions required by your app
