@@ -11,7 +11,15 @@ docker compose up --build
 
 ```sh
 python -m venv venv
+```
+```sh
 source venv/bin/activate
+```
+или
+```sh
+source venv/bin/activate.fish
+```
+```sh
 cd client
 pip install -r requirements.txt
 ```
@@ -19,5 +27,6 @@ pip install -r requirements.txt
 ### Запуск проекта
 
 ```sh
-python main.py
+# python main.py
+
 ```

@@ -1,2 +1,4 @@
 /venv/
-/client/.buildozer/
+/client/.buildozer/*
+/client/.buildozer*
+/client/bin/
