@@ -67,9 +67,13 @@ class MapScreen(MDScreen):
         root.add_widget(self.search_input)
 
 
-        # Определяем геопозицию
+        # Определяем геопозицию GPS через Plyer (Android) и fallback на ПК
         if GPS_AVAILABLE:
-            self.start_gps()
+            try:
+                gps.configure(on_location=self.update_location)
+                gps.start(minTime=1000, minDistance=1)
+            except NotImplementedError:
+                self.add_user_location_ip()
         else:
             self.add_user_location_ip()
 

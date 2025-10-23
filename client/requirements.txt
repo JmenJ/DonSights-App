@@ -1,4 +1,5 @@
 kivy[base]
+kivymd
 kivy-garden
 kivy_garden.mapview
 legacy-cgi; python_version >= "3.13"
