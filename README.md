@@ -27,6 +27,11 @@ pip install -r requirements.txt
 ### Запуск проекта
 
 ```sh
-# python main.py
+python main.py
+```
 
+### Сборка проекта под Android
+
+```sh
+buildozer android debug deploy
 ```

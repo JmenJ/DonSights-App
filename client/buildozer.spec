@@ -10,7 +10,7 @@
 
 [app]
 # (str) Title of your application
-title = DonSights
+title = ДонГИД
 
 # (str) Package name
 package.name = donsights
@@ -32,8 +32,7 @@ version = 0.1
 # third‑party HTTP libraries. The `legacy‑cgi` requirement is only
 # necessary if you build with Python ≥3.13; you can add
 # "legacy‑cgi; python_version >= '3.13'" here to avoid import errors.
-requirements = python3,kivy,kivy-garden,requests
-garden_requirements = mapview
+requirements = python3,kivy,kivy-garden,requests,urllib3
 
 # (str) Supported orientation (one of landscape, portrait, all)
 orientation = portrait
