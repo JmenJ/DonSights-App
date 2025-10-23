@@ -4,8 +4,22 @@ services:
       context: ./backend
     ports:
       - "4443:4443"
-    # Uncomment the following volume mount if you want to live-edit the
-    # server code without rebuilding the image. Docker will then mount the
-    # backend source into the container at runtime.
-    # volumes:
     #   - ./backend:/app
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_USER: db_user
+      MYSQL_PASSWORD: db_pass
+      MYSQL_DATABASE: db_db
+      MYSQL_ROOT_PASSWORD: rootpass
+      DB_HOST: db
+      DB_PORT: 3306
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+

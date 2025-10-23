@@ -2,7 +2,6 @@ import json
 import ssl
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
-
 class JSONHandler(BaseHTTPRequestHandler):
     """
     A very simple HTTP(S) request handler that serves JSON responses.
