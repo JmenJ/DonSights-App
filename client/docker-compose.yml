@@ -1,0 +1,10 @@
+services:
+  buildozer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: donsights-builder
+    volumes:
+      - .:/app
+    tty: true
+    stdin_open: true
