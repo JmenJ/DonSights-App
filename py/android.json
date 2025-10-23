@@ -1,0 +1,25 @@
+{
+    "api": 33,
+    "expansion": false,
+    "google_play_key": null,
+    "google_play_salt": null,
+    "heap_size": "1",
+    "icon_name": "DonSightsApp",
+    "include_pil": false,
+    "include_sqlite": false,
+    "layout": null,
+    "name": "DonSightsApp",
+    "numeric_version": 1,
+    "orientation": "portrait",
+    "package": "com.yourname.donsightsapp",
+    "permissions": [
+        "VIBRATE",
+        "INTERNET"
+    ],
+    "source": false,
+    "store": "none",
+    "update_always": false,
+    "update_icons": true,
+    "update_keystores": true,
+    "version": "1.0"
+}

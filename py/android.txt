@@ -1,0 +1,6 @@
+name = DonSightsApp
+version = 1.0
+package = com.yourname.donsightsapp
+numeric_version = 1
+
+keystore = "android.keystore"
