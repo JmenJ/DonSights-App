@@ -1,10 +1,9 @@
 services:
   buildozer:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: donsights-builder
+    build: .
+    container_name: buildozer
     volumes:
-      - .:/app
-    tty: true
-    stdin_open: true
+      - .:/app   # твой проект
+    environment:
+      - ANDROID_HOME=/opt/android-sdk
+    command: buildozer android debug
